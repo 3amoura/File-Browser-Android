@@ -124,6 +124,10 @@ public class FileSelectionAdapter extends RecyclerView.Adapter<FileSelectionAdap
         }
     };
 
+    public File getCurrentPath() {
+        return parentFolder;
+    }
+
     private FileFilter fileFilter = new FileFilter() {
 
         @Override

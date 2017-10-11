@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
+import android.view.Menu;
 import android.view.MenuItem;
 
 import java.io.File;
@@ -41,12 +42,20 @@ public class FileSelectionActivity extends AppCompatActivity implements FileSele
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        if (extensionsToAccept.length == 0) {
+            getMenuInflater().inflate(R.menu.select_folder_menu, menu);
+        }
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                setResult(Activity.RESULT_CANCELED);
-                finish();
-                break;
+        if (item.getItemId() == android.R.id.home) {
+            setResult(Activity.RESULT_CANCELED);
+            finish();
+        } else if (item.getItemId() == R.id.select_folder) {
+            onFileSelected(fileSelectionAdapter.getCurrentPath());
         }
         return super.onOptionsItemSelected(item);
     }
