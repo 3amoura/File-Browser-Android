@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
@@ -18,11 +19,17 @@ public class FileSelectionActivity extends AppCompatActivity implements FileSele
     private CustomToolbar toolbar;
     private FileSelectionAdapter fileSelectionAdapter;
     private String[] extensionsToAccept;
+    private String rootFolder = null;
 
-    public static void open(@NonNull Activity activity, boolean chooseFolder) {
+    public static void open(@NonNull Activity activity, boolean chooseFolder, @Nullable String path) {
         Intent intent = new Intent(activity, FileSelectionActivity.class);
         intent.putExtra(Constants.CHANGE_FOLDER_INTENT_EXTRA, chooseFolder);
+        intent.putExtra(Constants.FILE_PATH_INTENT_EXTRA, path);
         activity.startActivityForResult(intent, Constants.CHANGE_FOLDER_REQUEST);
+    }
+
+    public static void open(@NonNull Activity activity, boolean chooseFolder) {
+        open(activity, chooseFolder, null);
     }
 
     @Override
@@ -67,10 +74,14 @@ public class FileSelectionActivity extends AppCompatActivity implements FileSele
             // new String[]{"pdf", "txt", "doc", "docx", "xls", "xlsx", "ppt", "pptx", "jpg", "png", "gif", "jpeg"};
             extensionsToAccept = new String[]{"mp3"};
         }
+
+        if (getIntent().hasExtra(Constants.FILE_PATH_INTENT_EXTRA)) {
+            rootFolder = getIntent().getStringExtra(Constants.FILE_PATH_INTENT_EXTRA);
+        }
     }
 
     private void loadFiles() {
-        fileSelectionAdapter = new FileSelectionAdapter(this, extensionsToAccept);
+        fileSelectionAdapter = new FileSelectionAdapter(this, extensionsToAccept, rootFolder);
         fileRecyclerView.setAdapter(fileSelectionAdapter);
     }
 
