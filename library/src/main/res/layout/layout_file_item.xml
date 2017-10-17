@@ -23,11 +23,11 @@
         android:layout_toEndOf="@id/file_thumbnail"
         android:padding="@dimen/standard_margin" />
 
-    <android.support.v7.widget.AppCompatCheckBox
-        android:id="@+id/checkbox"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_toEndOf="@id/file_thumbnail"
-        android:button="@null"
-        android:drawableEnd="?android:attr/listChoiceIndicatorMultiple" />
+    <!--<android.support.v7.widget.AppCompatCheckBox-->
+        <!--android:id="@+id/checkbox"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_toEndOf="@id/file_thumbnail"-->
+        <!--android:button="@null"-->
+        <!--android:drawableEnd="?android:attr/listChoiceIndicatorMultiple" />-->
 </RelativeLayout>
