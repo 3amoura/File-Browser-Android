@@ -8,10 +8,4 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
-    <style name="SelectionButton" parent="Base.TextAppearance.AppCompat.Button">
-        <item name="android:textColor">@android:color/white</item>
-        <item name="android:layout_margin">@dimen/standard_margin</item>
-        <item name="textAllCaps">false</item>
-        <item name="android:background">@drawable/rounded_button</item>
-    </style>
 </resources>

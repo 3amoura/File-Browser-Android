@@ -1,13 +1,14 @@
-package bugzy.filebrowser;
+package net.bugzy.filebrowser;
 
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.AppCompatCheckBox;
+import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.io.File;
@@ -29,6 +30,7 @@ public class FileSelectionAdapter extends RecyclerView.Adapter<FileSelectionAdap
     private File parentFolder;
     private LayoutInflater layoutInflater;
     private FileSelectionListener fileSelectionListener;
+    private boolean checkable;
 
     public FileSelectionAdapter(@NonNull FileSelectionListener fileSelectionListener, @NonNull String[] extensionsToAccept,
                                 @Nullable String rootFolder) {
@@ -47,6 +49,8 @@ public class FileSelectionAdapter extends RecyclerView.Adapter<FileSelectionAdap
     @Override
     public void onBindViewHolder(FileSelectionViewHolder holder, int position) {
         if (canGoUp() && position == 0) {
+            holder.checkBox.setVisibility(View.INVISIBLE);
+            holder.fileName.setVisibility(View.VISIBLE);
             holder.fileThumbnail.setImageResource(R.drawable.ic_folder_24px);
             holder.fileName.setText("\\..");
             holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -93,6 +97,7 @@ public class FileSelectionAdapter extends RecyclerView.Adapter<FileSelectionAdap
     }
 
     private void updateFiles() {
+        fileSelectionListener.onFolderSelected(parentFolder);
         files = getListFiles(parentFolder);
         notifyDataSetChanged();
     }
@@ -154,14 +159,18 @@ public class FileSelectionAdapter extends RecyclerView.Adapter<FileSelectionAdap
 
     class FileSelectionViewHolder extends RecyclerView.ViewHolder {
 
-        public ImageView fileThumbnail;
-        public TextView fileName;
+        AppCompatImageView fileThumbnail;
+        TextView fileName;
+        AppCompatCheckBox checkBox;
 
-        public FileSelectionViewHolder(View itemView) {
+        FileSelectionViewHolder(View itemView) {
             super(itemView);
-            fileThumbnail = (ImageView) itemView.findViewById(R.id.file_thumbnail);
-            fileName = (TextView) itemView.findViewById(R.id.file_name);
+            fileThumbnail = itemView.findViewById(R.id.file_thumbnail);
+            fileName = itemView.findViewById(R.id.file_name);
+            checkBox = itemView.findViewById(R.id.checkbox);
         }
     }
+
+
 
 }

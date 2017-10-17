@@ -1,4 +1,4 @@
-package bugzy.filebrowser;
+package net.bugzy.filebrowser;
 
 import android.content.Context;
 import android.content.res.TypedArray;

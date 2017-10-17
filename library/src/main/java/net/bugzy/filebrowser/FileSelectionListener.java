@@ -1,4 +1,4 @@
-package bugzy.filebrowser;
+package net.bugzy.filebrowser;
 
 import android.content.Context;
 
@@ -10,5 +10,6 @@ import java.io.File;
 
 public interface FileSelectionListener {
     void onFileSelected(File file);
+    void onFolderSelected(File file);
     Context getContext();
 }

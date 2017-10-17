@@ -1,35 +1,45 @@
-package bugzy.filebrowser;
+package net.bugzy.filebrowser;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
 import java.io.File;
 
 public class FileSelectionActivity extends AppCompatActivity implements FileSelectionListener {
+    private final int STORAGE_REQUEST_CODE = 919;
 
     private RecyclerView fileRecyclerView;
     private CustomToolbar toolbar;
+    private TextView pathTextView;
     private FileSelectionAdapter fileSelectionAdapter;
     private String[] extensionsToAccept;
     private String rootFolder = null;
 
-    public static void open(@NonNull Activity activity, boolean chooseFolder, @Nullable String path) {
+    @NonNull
+    public static Intent open(@NonNull Activity activity, boolean chooseFolder, @Nullable String path) {
         Intent intent = new Intent(activity, FileSelectionActivity.class);
-        intent.putExtra(Constants.CHANGE_FOLDER_INTENT_EXTRA, chooseFolder);
-        intent.putExtra(Constants.FILE_PATH_INTENT_EXTRA, path);
-        activity.startActivityForResult(intent, Constants.CHANGE_FOLDER_REQUEST);
+        intent.putExtra(FileBrowser.CHANGE_FOLDER_INTENT_EXTRA, chooseFolder);
+        intent.putExtra(FileBrowser.FILE_PATH_INTENT_EXTRA, path);
+        return intent;
     }
 
-    public static void open(@NonNull Activity activity, boolean chooseFolder) {
-        open(activity, chooseFolder, null);
+    @NonNull
+    public static Intent open(@NonNull Activity activity, boolean chooseFolder) {
+        return open(activity, chooseFolder, null);
     }
 
     @Override
@@ -37,15 +47,54 @@ public class FileSelectionActivity extends AppCompatActivity implements FileSele
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_file_selection);
         findElements();
-        setSupportActionBar(toolbar);
+        if (getSupportActionBar() == null) {
+            setSupportActionBar(toolbar);
+        } else {
+            toolbar.setVisibility(View.GONE);
+        }
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getDataFromIntent();
-        loadFiles();
+        checkPermission();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case STORAGE_REQUEST_CODE: {
+                // If request is cancelled, the result arrays are empty.
+                boolean permissionsGranted = true;
+                for (int i = 0; i < permissions.length; i++) {
+                    if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
+                        permissionsGranted = false;
+                        finish();
+                    }
+                }
+                if (permissionsGranted) {
+                    loadFiles();
+                }
+            }
+        }
+    }
+
+    private void checkPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(getContext(),
+                    Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE},
+                        STORAGE_REQUEST_CODE);
+            } else {
+                loadFiles();
+            }
+        } else {
+            loadFiles();
+        }
     }
 
     private void findElements() {
         fileRecyclerView = (RecyclerView) findViewById(R.id.files_recycler_view);
         toolbar = (CustomToolbar) findViewById(R.id.toolbar);
+        pathTextView = (TextView) findViewById(R.id.path_label);
     }
 
     @Override
@@ -68,15 +117,15 @@ public class FileSelectionActivity extends AppCompatActivity implements FileSele
     }
 
     private void getDataFromIntent() {
-        if (getIntent().getBooleanExtra(Constants.CHANGE_FOLDER_INTENT_EXTRA, false)) {
+        if (getIntent().getBooleanExtra(FileBrowser.CHANGE_FOLDER_INTENT_EXTRA, false)) {
             extensionsToAccept = new String[]{};
         } else {
             // new String[]{"pdf", "txt", "doc", "docx", "xls", "xlsx", "ppt", "pptx", "jpg", "png", "gif", "jpeg"};
             extensionsToAccept = new String[]{"mp3"};
         }
 
-        if (getIntent().hasExtra(Constants.FILE_PATH_INTENT_EXTRA)) {
-            rootFolder = getIntent().getStringExtra(Constants.FILE_PATH_INTENT_EXTRA);
+        if (getIntent().hasExtra(FileBrowser.FILE_PATH_INTENT_EXTRA)) {
+            rootFolder = getIntent().getStringExtra(FileBrowser.FILE_PATH_INTENT_EXTRA);
         }
     }
 
@@ -98,9 +147,14 @@ public class FileSelectionActivity extends AppCompatActivity implements FileSele
     @Override
     public void onFileSelected(File file) {
         Intent intent = new Intent();
-        intent.putExtra(Constants.FILE_PATH_INTENT_EXTRA, file);
+        intent.putExtra(FileBrowser.FILE_PATH_INTENT_EXTRA, file);
         setResult(RESULT_OK, intent);
         finish();
+    }
+
+    @Override
+    public void onFolderSelected(File file) {
+        pathTextView.setText(file.getAbsolutePath());
     }
 
     @Override

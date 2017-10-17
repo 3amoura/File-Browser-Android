@@ -1,21 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_file_selection"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <bugzy.filebrowser.CustomToolbar
+    <net.bugzy.filebrowser.CustomToolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:transparent_background="true" />
 
+    <TextView
+        android:id="@+id/path_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/toolbar"
+        android:padding="@dimen/standard_margin" />
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/files_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/toolbar"
+        android:layout_below="@id/path_label"
         android:scrollbars="vertical"
-        app:layoutManager="android.support.v7.widget.LinearLayoutManager" />
+        app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+        tools:listitem="@layout/layout_file_item" />
 </RelativeLayout>
